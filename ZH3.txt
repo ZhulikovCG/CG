@@ -1,0 +1,621 @@
+import maya.cmds as mc
+import maya.cmds as cmds
+import maya.mel as mel
+
+# ///////////////////////////////////////////////////////////////////////////////////////////// ERROR MESSAGE
+
+cmds.warning()
+print
+'Error',
+
+# //////////////////////////////////////////////// UI \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+if mc.window("ZHShade", exists= True):
+    mc.deleteUI("ZHShade", wnd= True, m= True)
+
+
+Window = cmds.window('ZHShade', tlb=True, bgc=(0.15, 0.15, 0.15), widthHeight=(400, 600))
+
+form = cmds.formLayout(hlc=(0.5, 0.5, 0.5))
+tabs = cmds.tabLayout(innerMarginWidth=10)
+cmds.formLayout(form, edit=True, w=460, h=600,attachForm=((tabs, 'top', 1), (tabs, 'left', 1), (tabs, 'bottom', 1), (tabs, 'right', 1)))
+
+allowedAreas = ['right', 'left']
+doc = cmds.dockControl(l="ZHShade", m=True, fl=False, area='right', content="ZHShade", aa='all')
+
+# ///////////////////////////////////////////////////////////////////////////////////////////// METALS
+child1 = cmds.rowColumnLayout(numberOfColumns=3, columnWidth=[(1, 150), (2, 150), (3, 150)],
+                              columnAlign=[(1, 'center'), (2, 'center'), (3, 'center')])
+cmds.separator(h=20, style='none')
+
+cmds.text(" METALS ", al='center', ww=True)
+cmds.separator(h=10, style='none')
+
+
+imageSteel = cmds.internalVar(upd=True) + "Icons/Steel.png"
+imageCopper = cmds.internalVar(upd=True) + "Icons/Copper.png"
+imageGold = cmds.internalVar(upd=True) + "Icons/Gold.png"
+imageDust = cmds.internalVar(upd=True) + "Icons/Dust.png"
+imageRust = cmds.internalVar(upd=True) + "Icons/Rust.png"
+imageMachine = cmds.internalVar(upd=True) + "Icons/Machine.png"
+imagePainted_Red = cmds.internalVar(upd=True) + "Icons/Painted_Red.png"
+imagePainted_Yellow = cmds.internalVar(upd=True) + "Icons/Painted_Yellow.png"
+imagePainted_Blue = cmds.internalVar(upd=True) + "Icons/Painted_Blue.png"
+imageCustom = cmds.internalVar(upd=True) + "Icons/Custom.png"
+
+
+Steel = cmds.symbolButton(image='Steel.png', c="Steel()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Steel()')
+
+Copper = cmds.symbolButton(image='Copper.png', c="Copper()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Copper()')
+
+Gold = cmds.symbolButton(image='Gold.png', c="Gold()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Gold()')
+
+mc.text(l='MS_Steel')
+mc.text(l='MS_Copper')
+mc.text(l='MS_Gold')
+
+
+Dust = cmds.symbolButton(image='Dust.png', c="Dust()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Dust()')
+
+Rust = cmds.symbolButton(image='Rust.png', c="Rust()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Rust()')
+
+Machine = cmds.symbolButton(image='Machine.png', c="Machine()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Machine()')
+
+mc.text(l='MS_Dust')
+mc.text(l='MS_Rust')
+mc.text(l='MS_Machine')
+
+
+Painted_Red = cmds.symbolButton(image='Painted_Red.png', c="Painted_Red()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Painted_Red()')
+
+Painted_Yellow = cmds.symbolButton(image='Painted_Yellow.png', c="Painted_Yellow()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Painted_Yellow()')
+
+Painted_Blue = cmds.symbolButton(image='Painted_Blue.png', c="Painted_Blue()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Painted_Blue()')
+
+mc.text(l='MS_Painted_Red')
+mc.text(l='MS_Painted_Yellow')
+mc.text(l='MS_Painted_Blue')
+
+
+Custom = cmds.symbolButton(image='Custom.png', c="Custom()", h=150)
+cmds.popupMenu()
+cmds.menuItem(l='Create', c='Custom()')
+
+mc.text(l='MS_Custom')
+
+
+cmds.separator(h=10, style='none')
+cmds.setParent('..')
+
+cmds.tabLayout(tabs, edit=True, tabLabel=((child1, 'Shaders')))
+
+# ///////////////////////////////////////////////////////////////////////////////////////////// TOOLS
+child2 = cmds.rowColumnLayout(numberOfColumns=3, columnWidth=[(1, 80), (2, 80), (3, 80)],columnAlign=[(1, 'center'), (2, 'center'), (3, 'center')])
+
+mc.text(" ----------------------- MIRROR ----------------------- ", al='right', ww=True)
+cmds.separator(h=20, style='none')
+cmds.separator(h=20, style='none')
+
+imageMirror = cmds.internalVar(upd=True) + "Icons/Mirror.png"
+mc.iconTextButton(image='Mirror.png', label='Mirror', h=70, c="Mirror()")
+
+mc.popupMenu(b= 1)
+mc.menuItem('Mirror_X', c='Mirror_X()')
+mc.menuItem('Mirror_Y', c='Mirror_Y()')
+mc.menuItem('Mirror_Z', c='Mirror_Z()')
+
+cmds.setParent('..')
+cmds.tabLayout(tabs, edit=True, tabLabel=((child1, 'Shaders'), (child2, 'Tools')))
+
+cmds.showWindow("ZHShade")
+
+
+# /////////////////////////////////////////////////// TOOLS BASE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+# /////////// TOOL MIRROR
+def Mirror_X():
+    selection = cmds.ls(sl=True)
+    cmds.polyMirrorFace(axis=0, axisDirection=1, mergeMode=1, mergeThresholdType=0, mergeThreshold=0.001, mirrorAxis=1,
+                        mirrorPosition=0)
+
+
+def Mirror_Y():
+    selection = cmds.ls(sl=True)
+    cmds.polyMirrorFace(axis=1, axisDirection=1, mergeMode=1, mergeThresholdType=0, mergeThreshold=0.001, mirrorAxis=1,
+                        mirrorPosition=0)
+
+
+def Mirror_Z():
+    selection = cmds.ls(sl=True)
+    cmds.polyMirrorFace(axis=2, axisDirection=1, mergeMode=1, mergeThresholdType=0, mergeThreshold=0.001, mirrorAxis=1,
+                        mirrorPosition=0)
+
+
+# /////////////////////////////////////////////////// METAL BASE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+# /////////// METAL STEEL
+def Steel():
+    SteelPath = cmds.internalVar(upd=True) + "Shaders/Steel.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Steel'):
+        print("Steel_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Steel")
+            cmds.select("Steel")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(SteelPath, i=True)
+        cmds.binMembership("Steel", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Steel")
+            cmds.select("Steel")
+            print
+            "Done"
+
+
+def cn_Steel():
+    SteelPath = mc.internalVar(upd=True) + "Shaders/Steel.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(SteelPath, i=True)
+    mc.select("Steel_Steel")
+    mc.rename("Steel_New")
+    mc.binMembership("Steel_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Steel_New")
+    mc.select("Steel_New")
+    mc.rename("Steel_2")
+    mc.select("Steel_2")
+    print
+    "Done"
+
+
+# /////////// METAL COPPER
+def Copper():
+    CopperPath = cmds.internalVar(upd=True) + "Shaders/Copper.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Copper'):
+        print("Copper_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Copper")
+            cmds.select("Copper")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(CopperPath, i=True)
+        cmds.binMembership("Copper", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Copper")
+            cmds.select("Copper")
+            print
+            "Done"
+
+
+def cn_Copper():
+    CopperPath = mc.internalVar(upd=True) + "Shaders/Copper.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(CopperPath, i=True)
+    mc.select("Copper_Copper")
+    mc.rename("Copper_New")
+    mc.binMembership("Copper_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Copper_New")
+    mc.select("Copper_New")
+    mc.rename("Copper_2")
+    mc.select("Copper_2")
+    print
+    "Done"
+
+
+# /////////// METAL GOLD
+def Gold():
+    GoldPath = cmds.internalVar(upd=True) + "Shaders/Gold.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Gold'):
+        print("Gold_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Gold")
+            cmds.select("Gold")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(GoldPath, i=True)
+        cmds.binMembership("Gold", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Gold")
+            cmds.select("Gold")
+            print
+            "Done"
+
+
+def cn_Gold():
+    GoldPath = mc.internalVar(upd=True) + "Shaders/Gold.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(GoldPath, i=True)
+    mc.select("Gold_Gold")
+    mc.rename("Gold_New")
+    mc.binMembership("Gold_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Gold_New")
+    mc.select("Gold_New")
+    mc.rename("Gold_2")
+    mc.select("Gold_2")
+    print
+    "Done"
+
+
+# /////////// METAL DUST
+def Dust():
+    DustPath = cmds.internalVar(upd=True) + "Shaders/Dust.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Dust'):
+        print("Dust_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Dust")
+            cmds.select("Dust")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(DustPath, i=True)
+        cmds.binMembership("Dust", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Dust")
+            cmds.select("Dust")
+            print
+            "Done"
+
+
+def cn_Dust():
+    DustPath = mc.internalVar(upd=True) + "Shaders/Dust.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(DustPath, i=True)
+    mc.select("Dust_Dust")
+    mc.rename("Dust_New")
+    mc.binMembership("Dust_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Dust_New")
+    mc.select("Dust_New")
+    mc.rename("Dust_2")
+    mc.select("Dust_2")
+    print
+    "Done"
+    
+    
+# /////////// METAL RUST
+def Rust():
+    RustPath = cmds.internalVar(upd=True) + "Shaders/Rust.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Rust'):
+        print("Rust_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Rust")
+            cmds.select("Rust")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(RustPath, i=True)
+        cmds.binMembership("Rust", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Rust")
+            cmds.select("Rust")
+            print
+            "Done"
+
+
+def cn_Rust():
+    RustPath = mc.internalVar(upd=True) + "Shaders/Rust.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(RustPath, i=True)
+    mc.select("Rust_Rust")
+    mc.rename("Rust_New")
+    mc.binMembership("Rust_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Rust_New")
+    mc.select("Rust_New")
+    mc.rename("Rust_2")
+    mc.select("Rust_2")
+    print
+    "Done"
+    
+    
+# /////////// METAL MACHINE
+def Machine():
+    MachinePath = cmds.internalVar(upd=True) + "Shaders/Machine.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Machine'):
+        print("Machine_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Machine")
+            cmds.select("Machine")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(MachinePath, i=True)
+        cmds.binMembership("Machine", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Machine")
+            cmds.select("Machine")
+            print
+            "Done"
+
+
+def cn_Machine():
+    MachinePath = mc.internalVar(upd=True) + "Shaders/Machine.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(MachinePath, i=True)
+    mc.select("Machine_Machine")
+    mc.rename("Machine_New")
+    mc.binMembership("Machine_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Machine_New")
+    mc.select("Machine_New")
+    mc.rename("Machine_2")
+    mc.select("Machine_2")
+    print
+    "Done"
+    
+    
+# /////////// METAL PAINTED_RED
+def Painted_Red():
+    Painted_RedPath = cmds.internalVar(upd=True) + "Shaders/Painted_Red.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Painted_Red'):
+        print("Painted_Red_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Painted_Red")
+            cmds.select("Painted_Red")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(Painted_RedPath, i=True)
+        cmds.binMembership("Painted_Red", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Painted_Red")
+            cmds.select("Painted_Red")
+            print
+            "Done"
+
+
+def cn_Painted_Red():
+    Painted_RedPath = mc.internalVar(upd=True) + "Shaders/Painted_Red.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(Painted_RedPath, i=True)
+    mc.select("Painted_Red_Painted_Red")
+    mc.rename("Painted_Red_New")
+    mc.binMembership("Painted_Red_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Painted_Red_New")
+    mc.select("Painted_Red_New")
+    mc.rename("Painted_Red_2")
+    mc.select("Painted_Red_2")
+    print
+    "Done"
+    
+    
+# /////////// METAL PAINTED_YELLOW
+def Painted_Yellow():
+    Painted_YellowPath = cmds.internalVar(upd=True) + "Shaders/Painted_Yellow.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Painted_Yellow'):
+        print("Painted_Yellow_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Painted_Yellow")
+            cmds.select("Painted_Yellow")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(Painted_YellowPath, i=True)
+        cmds.binMembership("Painted_Yellow", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Painted_Red")
+            cmds.select("Painted_Yellow")
+            print
+            "Done"
+
+
+def cn_Painted_Yellow():
+    Painted_YellowPath = mc.internalVar(upd=True) + "Shaders/Painted_Yellow.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(Painted_YellowPath, i=True)
+    mc.select("Painted_Yellow_Painted_Yellow")
+    mc.rename("Painted_Yellow_New")
+    mc.binMembership("Painted_Yellow_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Painted_Yellow_New")
+    mc.select("Painted_Yellow_New")
+    mc.rename("Painted_Yellow_2")
+    mc.select("Painted_Yellow_2")
+    print
+    "Done"
+    
+    
+# /////////// METAL PAINTED_BLUE
+def Painted_Blue():
+    Painted_BluePath = cmds.internalVar(upd=True) + "Shaders/Painted_Blue.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Painted_Blue'):
+        print("Painted_Blue_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Painted_Blue")
+            cmds.select("Painted_Blue")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(Painted_BluePath, i=True)
+        cmds.binMembership("Painted_Blue", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Painted_Blue")
+            cmds.select("Painted_Blue")
+            print
+            "Done"
+
+
+def cn_Painted_Blue():
+    Painted_BluePath = mc.internalVar(upd=True) + "Shaders/Painted_Blue.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(Painted_BluePath, i=True)
+    mc.select("Painted_Blue_Painted_Blue")
+    mc.rename("Painted_Blue_New")
+    mc.binMembership("Painted_Blue_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Painted_Blue_New")
+    mc.select("Painted_Blue_New")
+    mc.rename("Painted_Blue_2")
+    mc.select("Painted_Blue_2")
+    print
+    "Done"
+    
+    
+# /////////// METAL CUSTOM
+def Custom():
+    CustomPath = cmds.internalVar(upd=True) + "Shaders/Custom.mb"
+    selection = cmds.ls(sl=True, fl=True, dag=True)
+
+    if cmds.objExists('Custom'):
+        print("Custom_EXIST")
+        for each in selection:
+            cmds.hyperShade(a="Custom")
+            cmds.select("Custom")
+            print
+            "Done"
+
+    else:
+        cmds.sets(n="Settemps")
+        cmds.file(CustomPath, i=True)
+        cmds.binMembership("Custom", addToBin="Viewport_Shaders")
+        cmds.select("Settemps")
+        cmds.ls(selection=True)
+        cmds.delete("Settemps")
+        for each in selection:
+            cmds.hyperShade(a="Custom")
+            cmds.select("Custom")
+            print
+            "Done"
+
+
+def cn_Custom():
+    CustomPath = mc.internalVar(upd=True) + "Shaders/Custom.mb"
+    selection = mc.ls(sl=True, fl=True, dag=True)
+
+    mc.sets(n="Settemps")
+    mc.file(CustomPath, i=True)
+    mc.select("Custom_Custom")
+    mc.rename("Custom_New")
+    mc.binMembership("Custom_New", addToBin="Viewport_Shaders")
+    mc.select("Settemps")
+    mc.ls(selection=True)
+    mc.delete("Settemps")
+    mc.hyperShade(a="Custom_New")
+    mc.select("Custom_New")
+    mc.rename("Custom_2")
+    mc.select("Custom_2")
+    print
+    "Done"
